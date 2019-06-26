@@ -15,9 +15,10 @@ module.exports = (sequelize, DataTypes) => {
 			underscored: true,
 			sequelize
 		});
-	// eslint-disable-next-line no-unused-vars
 	user.associate = function (models) {
-		// associations can be defined here
+		user.hasMany(models.posts, {
+			as: 'posts'
+		})
 	};
 	return user;
 };
