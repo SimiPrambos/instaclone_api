@@ -21,10 +21,10 @@ class UserController {
 		})
 			.then(user => {
 				if (user) {
-					res.status(200).send(user)
+					return res.status(200).send(user)
 				}
 
-				// res.status(404, { detail: 'user not found' })
+				res.status(404, { detail: 'user not found' })
 			})
 			.catch(err => {
 				console.log(err)
