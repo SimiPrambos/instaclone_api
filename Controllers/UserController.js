@@ -5,16 +5,29 @@ const User = models.user
 class UserController {
 
 	static async me(req, res) {
-		await User.findByPk(req.user.id)
+		await User.findOne({
+			where: {
+				id: req.user.id
+			},
+			attributes: [
+				'id',
+				'username',
+				'email',
+				'profile_pic_url',
+				'created_at',
+				'updated_at'
+			],
+			include: 'posts'
+		})
 			.then(user => {
 				if (user) {
-					let { id, username, email, createdAt, updatedAt } = user
-					res.status(200).send({ id, username, email, createdAt, updatedAt })
+					res.status(200).send(user)
 				}
 
-				res.status(404, { detail: 'user not found' })
+				// res.status(404, { detail: 'user not found' })
 			})
 			.catch(err => {
+				console.log(err)
 				res.status(500).send({ detail: err })
 			})
 	}

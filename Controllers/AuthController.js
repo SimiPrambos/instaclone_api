@@ -12,7 +12,8 @@ class AuthController {
             .then(user => {
                 if (user) {
                     let jwt = JwtAuthMiddleware.signJwt({ id: user.id, email: user.email })
-                    res.status(200).send({ email: user.email, jwt })
+					res.status(200).send({ email: user.email, jwt })
+					return
                 }
                 res.status(401).send({detail: 'Wrong username or password'})
             })
@@ -43,7 +44,8 @@ class AuthController {
                 res.status(201).send({ id, username, email, createdAt })
             })
             .catch(err => {
-                res.status(500).send(err)
+				console.log(err)
+                res.status(500).send('Internal server error')
             })
     }
 }

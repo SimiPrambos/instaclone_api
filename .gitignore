@@ -87,3 +87,4 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 config/config.json
+seeders/GeneratorFromJsonPlaceholder.js

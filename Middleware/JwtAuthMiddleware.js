@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
-
+require('dotenv').config()
 const SECRET_KEY = process.env.SECRET_KEY
-
+console.log(SECRET_KEY)
 class JwtAuthMiddleware {
 
 	static async isAuthenticated(req, res, next) {

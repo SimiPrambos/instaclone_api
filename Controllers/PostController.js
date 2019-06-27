@@ -7,10 +7,18 @@ class PostController {
 
 	static async index(req, res) {
 
-		let user_id = req.user.id
+		// let user_id = req.user.id
 
 		await Posts.findAll({
-			where: { user_id }
+			include: [{
+				model: models.user,
+				attributes: [
+					'id',
+					'username',
+					'profile_pic_url'
+				]
+			}],
+			through: ['userId']
 		}).then(posts => {
 			res.status(200).send(posts)
 		}).catch(error => {
