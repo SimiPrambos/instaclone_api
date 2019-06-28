@@ -3,6 +3,8 @@ import UserController from '../Controllers/UserController'
 
 const router = express.Router()
 
-router.get('/me', UserController.me)
+router
+	.get('/me', UserController.retrieve)
+	.patch('/me', UserController.update)
 
 module.exports = router
