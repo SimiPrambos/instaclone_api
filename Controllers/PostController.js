@@ -5,11 +5,41 @@ const Posts = models.posts
 
 class PostController {
 
-	static async index(req, res) {
+	static async feed(req, res){
 
-		// let user_id = req.user.id
+		let {limit, offset} = req.query
 
 		await Posts.findAll({
+			limit: limit || 5,
+			offset,
+			include: [{
+				model: models.user,
+				attributes: [
+					'id',
+					'username',
+					'profile_pic_url'
+				]
+			}]
+		}).then(posts => {
+			return res.status(200).send(posts)
+		}).catch(error => {
+			console.log(error)
+			return res.status(500).send('Internal server error')
+		})
+
+	}
+
+	static async index(req, res) {
+
+		let user_id = req.user.id
+		let { limit, offset } = req.query
+
+		await Posts.findAll({
+			limit: limit || 5,
+			offset,
+			where: {
+				user_id
+			},
 			include: [{
 				model: models.user,
 				attributes: [
@@ -18,12 +48,11 @@ class PostController {
 					'profile_pic_url'
 				]
 			}],
-			through: ['userId']
 		}).then(posts => {
-			res.status(200).send(posts)
+			return res.status(200).send(posts)
 		}).catch(error => {
 			console.log(error)
-			res.status(500).send('Internal server error')
+			return res.status(500).send('Internal server error')
 		})
 
 	}
@@ -35,11 +64,11 @@ class PostController {
 
 		await Posts.create({ user_id, media_url, caption })
 			.then(createdPost => {
-				res.status(201).send(createdPost)
+				return res.status(201).send(createdPost)
 			})
 			.catch(error => {
 				console.log('Post create error :', error)
-				res.status(500).send(error)
+				return res.status(500).send(error)
 			})
 
 	}
@@ -51,13 +80,13 @@ class PostController {
 		await Posts.findOne({ where: { id: post_id } })
 			.then(foundedPost => {
 				if (foundedPost) {
-					res.status(200).send(foundedPost)
+					return res.status(200).send(foundedPost)
 				}
 
-				res.status(404).send({ detail: 'Data not found' })
+				return res.status(404).send({ detail: 'Data not found' })
 			}).catch(error => {
 				console.log('Post retrieve error :', error)
-				res.status(500).send('Internal server error')
+				return res.status(500).send('Internal server error')
 			})
 
 	}
@@ -71,18 +100,18 @@ class PostController {
 			.then(post => {
 				if (post) {
 					post.update(newData).then(updatedData => {
-						res.status(200).send(updatedData)
+						return res.status(200).send(updatedData)
 					}).catch(error => {
 						console.log('Post update error :', error)
-						res.send(400, 'Update failed')
+						return res.send(400, 'Update failed')
 					})
 
-					res.status(404).send({ detail: 'Not found' })
+					return res.status(404).send({ detail: 'Not found' })
 				}
 			})
 			.catch(error => {
 				console.log('Post update error :', error)
-				res.send(400, 'Update failed')
+				return res.send(400, 'Update failed')
 			})
 
 	}
@@ -94,24 +123,15 @@ class PostController {
 			.then(post => {
 				if (post) {
 					post.destroy()
-					res.status(204).send({})
+					return res.status(204).send({})
 				}
 
-				res.status(404).send({ detail: 'Not found' })
+				return res.status(404).send({ detail: 'Not found' })
 			})
 			.catch(error => {
 				console.log('Post delete error :', error)
 			})
 
-	}
-
-	static postSerializer(data) {
-		let result = []
-		data.map(value => {
-			value.dataValues.media = JSON.parse(value.media)
-			result.push(value.dataValues)
-		})
-		return result
 	}
 }
 
